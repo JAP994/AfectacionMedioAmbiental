@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MedioAmbienteWeb.Data;
 using MedioAmbienteWeb.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MedioAmbienteWeb.Controllers
 {
+    
     public class CelularesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -43,12 +45,14 @@ namespace MedioAmbienteWeb.Controllers
             return View(celular);
         }
 
+        [Authorize]
         // GET: Celulares/Create
         public IActionResult Create()
         {
             return View();
         }
 
+        [Authorize]
         // POST: Celulares/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -64,7 +68,8 @@ namespace MedioAmbienteWeb.Controllers
             }
             return View(celular);
         }
-
+        
+        [Authorize(Roles = "ADMINISTRADOR")]
         // GET: Celulares/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -81,6 +86,7 @@ namespace MedioAmbienteWeb.Controllers
             return View(celular);
         }
 
+        [Authorize(Roles = "ADMINISTRADOR")]
         // POST: Celulares/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -116,6 +122,7 @@ namespace MedioAmbienteWeb.Controllers
             return View(celular);
         }
 
+        [Authorize]
         // GET: Celulares/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -134,6 +141,7 @@ namespace MedioAmbienteWeb.Controllers
             return View(celular);
         }
 
+        [Authorize]
         // POST: Celulares/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]

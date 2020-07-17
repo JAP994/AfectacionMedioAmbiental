@@ -18,6 +18,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Apellido)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FotografiaPerfil)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -29,6 +32,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Apellido)
+            </td>
+            <td>
+                <img src="#" alt="Foto" class="rounded-circle" height="40" width="40" />
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

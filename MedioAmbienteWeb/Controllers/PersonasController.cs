@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using MedioAmbienteWeb.Data;
 using MedioAmbienteWeb.Models;
 using Microsoft.AspNetCore.Authorization;
+using MedioAmbienteWeb.ViewModels;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace MedioAmbienteWeb.Controllers
 {
@@ -22,7 +25,9 @@ namespace MedioAmbienteWeb.Controllers
         // GET: Personas
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Personas.ToListAsync());
+            var personas = await _context.Personas.ToListAsync();
+            personas.ForEach(p => p.FotografiaBase64 = $"data:image/png;base64, { Convert.ToBase64String(p.FotografiaPerfil) }");
+            return View(personas);
         }
 
         // GET: Personas/Details/5
@@ -54,16 +59,33 @@ namespace MedioAmbienteWeb.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nombre,Apellido")] Persona persona)
+        public async Task<IActionResult> Create(PersonaViewModel modelo)//[Bind("Id,Nombre,Apellido")]
         {
             if (ModelState.IsValid)
             {
+                Persona persona = new Persona 
+                { 
+                    Nombre = modelo.Nombre, 
+                    Apellido = modelo.Apellido, 
+                    FotografiaPerfil = await ArchivoSubidoAsync(modelo.FotografiaPerfil)
+                };
                 persona.Id = Guid.NewGuid();
                 _context.Add(persona);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(persona);
+            return View(modelo);
+        }
+
+        private async Task<byte[]> ArchivoSubidoAsync(IFormFile fotografiaPerfil)
+        {
+            if (fotografiaPerfil==null) return null;
+            var memoryStream = new MemoryStream();
+            await fotografiaPerfil.CopyToAsync(memoryStream);
+            var limiteMaximo = 2097152;//valores superiores usar streaming
+            if (memoryStream.Length < limiteMaximo)
+                return memoryStream.ToArray();
+            return null;
         }
 
         // GET: Personas/Edit/5
